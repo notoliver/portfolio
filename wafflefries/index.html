@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+			canvas { outline: none; border: none; }
+		</style>
+	</head>
+
+	<body>
+		<script src="js/three.js"></script>
+		<script src="js/OrbitControls.js"></script>
+		<script src="js/GLTFLoader.js"></script>
+
+		<script>
+			//renderer setup
+			const scene = new THREE.Scene();
+			const renderer = new THREE.WebGLRenderer( { alpha: true } );
+			renderer.setPixelRatio( window.devicePixelRatio );
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
+
+			//import mesh
+			const loader = new THREE.GLTFLoader();
+			loader.load( 'wafflefries.gltf', function ( gltf ) {
+
+				scene.add( gltf.scene );
+
+			}, undefined, function ( error ) {
+
+				console.error( error );
+
+			} );
+
+			//lights
+			var light = new THREE.PointLight( 0xffffff, .4 );
+			light.position.set( 10, 10, 10 );
+			scene.add( light );
+
+			ambientLight = new THREE.AmbientLight( 0xffffff );
+			scene.add( ambientLight );
+
+			//camera setup
+			const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+			controls = new THREE.OrbitControls( camera, renderer.domElement );
+			controls.enableDamping = true;
+			controls.dampingFactor = 0.25;
+			controls.enablePan = false;
+			controls.enableZoom = true;
+			camera.position.set( -3, 3, 3 );
+
+			//animate cycle
+			const animate = function () {
+				// Update the orbit controls
+				controls.update();
+				// Render the frame
+				renderer.render( scene, camera );
+				// Keep the animation going
+				requestAnimationFrame( animate );
+			};
+			animate();
+
+			//resize
+			window.addEventListener( 'resize', onWindowResize, false );
+			function onWindowResize(){
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+		</script>
+	</body>
+</html>
