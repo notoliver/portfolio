@@ -14,6 +14,8 @@
 		<script src="js/OrbitControls.js"></script>
 		<script src="js/GLTFLoader.js"></script>
 
+		<div id='ook' style='position:fixed'>hey</div>
+
 		<script>
 			//renderer setup
 			const scene = new THREE.Scene();
@@ -50,6 +52,7 @@
 			controls.enableZoom = true;
 			camera.position.set( -3, 3, 3 );
 
+
 			//animate cycle
 			const animate = function () {
 				// Update the orbit controls
@@ -67,6 +70,12 @@
 				camera.aspect = window.innerWidth / window.innerHeight;
 				camera.updateProjectionMatrix();
 				renderer.setSize( window.innerWidth, window.innerHeight );
+			}
+
+			//onclick
+			window.addEventListener('click', onClick, true); 
+			function onClick(){
+				document.getElementById("ook").innerHTML+='heyy'
 			}
 			
 		</script>
