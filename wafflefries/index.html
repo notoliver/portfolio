@@ -2,10 +2,27 @@
 <html>
 	<head>
 		<meta charset="utf-8" name="viewport">
-		<title>My first three.js app</title>
+		<title>Waffle Fry Clicker</title>
 		<style>
-			body { margin: 0; background-color:#FDF5E6 }
+			@font-face {
+				font-family: notfont;
+				src: url(Not_fontbold-Regular.ttf);
+			}
+			body { margin: 0; background-color:#FDF5E6; font-family:notfont}
 			canvas { outline: none; border: none; }
+			#ook{
+				position:fixed;
+				top:20px;
+				left:20px;
+				font-size:30px;
+			}
+			#oook{
+				position:fixed;
+				top:60px;
+				left:20px;
+				font-size:15px;
+				line-height:8px;
+			}
 		</style>
 	</head>
 
@@ -14,9 +31,13 @@
 		<script src="js/OrbitControls.js"></script>
 		<script src="js/GLTFLoader.js"></script>
 
-		<div id='ook' style='position:fixed'>hey</div>
+		<div id='ook'></div>
+		<div id='oook'>i love waffle fries<br></br>w love from oliver</div>
 
 		<script>
+			var score = 0; 
+			document.getElementById('ook').innerHTML = "Score: "+score;
+			
 			//renderer setup
 			const scene = new THREE.Scene();
 			const renderer = new THREE.WebGLRenderer( { alpha: true } );
@@ -44,6 +65,12 @@
 
 			});
 
+			const geometry = new THREE.PlaneGeometry( 100, 100 );
+			const material = new THREE.MeshBasicMaterial( {color: 0xFDF5E6, side: THREE.DoubleSide} );
+			const plane = new THREE.Mesh( geometry, material );
+			plane.rotation.set(Math.PI/2,0,0);
+			plane.position.y = -30;
+			scene.add( plane );
 			
 			
 
@@ -56,7 +83,7 @@
 			scene.add( ambientLight );		
 
 			//camera setup
-			const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+			const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 50 );
 			camera.aspect = window.innerWidth / window.innerHeight;
 			camera.updateProjectionMatrix();
 			controls = new THREE.OrbitControls( camera, renderer.domElement );
@@ -71,16 +98,29 @@
 			gravity = -0.007;
 			function updateFries(){
 				for(var i=fries.length-1;i>=0;i--){
-					if(fries[i].newFry.position.y<-15){
+					if(fries[i].newFry.position.y<-50.0){
+						//fries[i].newFry.visible = false;
 						scene.remove(fries[i].newFry);
+						
+						console.log('removed');
 						fries.shift();
 					}
 					else{
 						fries[i].velocity += gravity;
-						fries[i].newFry.translateY(fries[i].velocity);
+						fries[i].newFry.position.y += fries[i].velocity;
 					}
 					
 				}
+
+				/*
+				scene.traverse( function( node ) {
+					if ( node instanceof THREE.Mesh ) {
+						console.log(node.uuid);
+						if(node.uuid != "475AC5F8-69F0-4625-91E7-AA550FB96EF8"){
+							scene.remove(node);
+						}
+					}
+				} );*/
 			}
 
 			//animate cycle
@@ -108,17 +148,29 @@
 			window.addEventListener('click', onClick, true); 
 			window.addEventListener('touchstart', onClick, true);
 
+			//var score = 0;
+
 			function onClick(){
 				var newFry = fry.clone();
-				//newFry.rotation.set(80,70,90);
+				
+				score++;
+				document.getElementById('ook').innerHTML = "Score: "+score;
+				
+				newFry.rotation.set(Math.random() * 2*Math.PI,Math.random() * 2*Math.PI,Math.random() * 2*Math.PI);
 				newFry.translateX(Math.random() * (1 - (-1)) + (-1));
 				newFry.translateZ(Math.random() * (1 - (-1)) + (-1));
 				
-				velocity = 0.2;
+				
+				velocity = Math.random() * (0.3 - (0.1)) + (0.1);
 				fries.push({newFry,velocity});
-				console.log(fries[0]);
 				scene.add(newFry);	
 			}
+
+			document.addEventListener("keypress", function onEvent(event) {
+				if (event.key === "Enter") {
+					console.log(fries);
+				}
+			});
 			
 		</script>
 	</body>
