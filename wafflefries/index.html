@@ -27,11 +27,25 @@
 
 			//import mesh
 			const loader = new THREE.GLTFLoader();
-			loader.load( 'wafflefries.gltf', function ( gltf ) {
-				scene.add( gltf.scene );
-			}, undefined, function ( error ) {
-				console.error( error );
-			} );
+
+			var bag = new THREE.Object3D();
+			var fry = new THREE.Object3D();
+
+			loader.load( 'wafflefries.gltf',(gltf)=>{
+				bag = gltf.scene;
+        		bag.name = 'bag';
+				scene.add(bag);
+				
+			});
+
+			loader.load( 'fry1.gltf',(gltf1)=>{
+				fry = gltf1.scene;
+        		fry.name = 'fry';
+
+			});
+
+			
+			
 
 			//lights
 			var light = new THREE.PointLight( 0xffffff, .4 );
@@ -52,6 +66,22 @@
 			controls.enableZoom = true;
 			camera.position.set( -3, 3, 3 );
 
+			//frylogic
+			var fries = [];
+			gravity = -0.007;
+			function updateFries(){
+				for(var i=fries.length-1;i>=0;i--){
+					if(fries[i].newFry.position.y<-15){
+						scene.remove(fries[i].newFry);
+						fries.shift();
+					}
+					else{
+						fries[i].velocity += gravity;
+						fries[i].newFry.translateY(fries[i].velocity);
+					}
+					
+				}
+			}
 
 			//animate cycle
 			const animate = function () {
@@ -61,6 +91,8 @@
 				renderer.render( scene, camera );
 				// Keep the animation going
 				requestAnimationFrame( animate );
+
+				updateFries();				
 			};
 			animate();
 
@@ -74,8 +106,18 @@
 
 			//onclick
 			window.addEventListener('click', onClick, true); 
+			window.addEventListener('touchstart', onClick, true);
+
 			function onClick(){
-				document.getElementById("ook").innerHTML+='heyy'
+				var newFry = fry.clone();
+				//newFry.rotation.set(80,70,90);
+				newFry.translateX(Math.random() * (1 - (-1)) + (-1));
+				newFry.translateZ(Math.random() * (1 - (-1)) + (-1));
+				
+				velocity = 0.2;
+				fries.push({newFry,velocity});
+				console.log(fries[0]);
+				scene.add(newFry);	
 			}
 			
 		</script>
